@@ -25,6 +25,62 @@
         @media (min-width: 768px) {
             .chart-container { height: 350px; }
         }
+
+        /* เพิ่ม Style สำหรับที่นั่งสอบ */
+        .seat-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr)); /* ปรับให้ยืดหยุ่น */
+            gap: 4px;
+            justify-content: center;
+            max-width: fit-content;
+            margin: 0 auto;
+        }
+        .seat {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #dcd7cd;
+            border-radius: 4px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            color: #dcd7cd;
+        }
+        @media (min-width: 768px) {
+            .seat { width: 32px; height: 32px; font-size: 0.75rem; }
+            .seat-grid { gap: 6px; }
+        }
+        .seat.my-seat {
+            border-color: #3b82f6; /* สีฟ้า */
+            background-color: #eff6ff;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        /* แถวและคอลัมน์ label */
+        .grid-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #78716c;
+            width: 24px;
+            height: 24px;
+        }
+        @media (min-width: 768px) {
+            .grid-label { width: 32px; height: 32px; font-size: 0.875rem; }
+        }
+        /* กระดาน */
+        .board-indicator {
+            border: 1px dashed #dcd7cd;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #78716c;
+            margin-bottom: 16px;
+            background-color: #faf8f5;
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen p-4 md:p-8">
@@ -50,7 +106,7 @@
             <div class="glass-panel p-6 rounded-2xl shadow-sm">
                 <h2 class="text-xl font-semibold text-stone-800 mb-2">📊 ภาพรวมและสถิติการสอบ (Overview & Insights)</h2>
                 <p class="text-stone-600 mb-6 text-sm md:text-base leading-relaxed">
-                    ส่วนนี้แสดงภาพรวมของตารางสอบปลายภาคของคุณผ่านกราฟและตัวเลขสรุป เพื่อให้เห็นความหนาแน่นของการสอบในแต่ละวัน 
+                    ส่วนนี้แสดงภาพรวมของตารางสอบปลายภาคของคุณผ่านตัวเลขสรุปและปฏิทิน เพื่อให้เห็นความหนาแน่นของการสอบในแต่ละวัน 
                     จุดประสงค์คือช่วยให้คุณสามารถวางแผนจัดสรรเวลาในการอ่านหนังสือทบทวนได้อย่างมีประสิทธิภาพมากยิ่งขึ้น
                 </p>
 
@@ -88,9 +144,10 @@
 
         <section class="space-y-4">
             <div class="glass-panel p-6 rounded-2xl shadow-sm">
-                <h2 class="text-xl font-semibold text-stone-800 mb-2">📅 รายละเอียดตารางสอบ (Interactive Schedule Details)</h2>
+                <h2 class="text-xl font-semibold text-stone-800 mb-2">📅 รายละเอียดตารางสอบและที่นั่งสอบ (Interactive Schedule & Seat Details)</h2>
                 <p class="text-stone-600 mb-6 text-sm md:text-base leading-relaxed">
-                    ค้นหาและจัดการตารางสอบของคุณอย่างละเอียดผ่านตารางแบบอินเทอร์แอกทีฟด้านล่าง คุณสามารถพิมพ์ <strong>ชื่อวิชา</strong> หรือ <strong>รหัสวิชา</strong> ในช่องค้นหา หรือเลือกตัวกรอง <strong>วันที่สอบ</strong> เพื่อดูข้อมูลเฉพาะวันที่ต้องการได้อย่างรวดเร็ว
+                    ค้นหาและจัดการตารางสอบของคุณอย่างละเอียด คุณสามารถพิมพ์ <strong>ชื่อวิชา</strong> หรือ <strong>รหัสวิชา</strong> ในช่องค้นหา หรือเลือกตัวกรอง <strong>วันที่สอบ</strong> <br>
+                    <span class="text-[#d97757] font-medium">📌 คลิกปุ่ม "ดูผังที่นั่ง" ในคอลัมน์ "ห้อง/ที่นั่ง" เพื่อดูตำแหน่งที่นั่งสอบของคุณในแต่ละวิชา (เฉพาะวิชาที่มีผัง)</span>
                 </p>
 
                 <div class="flex flex-col md:flex-row gap-4 mb-6">
@@ -105,7 +162,7 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto rounded-xl border border-stone-200 shadow-sm">
+                <div class="overflow-x-auto rounded-xl border border-stone-200 shadow-sm mb-6">
                     <table class="w-full text-left border-collapse bg-white">
                         <thead>
                             <tr class="bg-stone-100 text-stone-700 uppercase text-xs font-semibold tracking-wider">
@@ -113,6 +170,7 @@
                                 <th class="p-4 border-b border-stone-200">เวลาสอบ</th>
                                 <th class="p-4 border-b border-stone-200">รหัสวิชา</th>
                                 <th class="p-4 border-b border-stone-200">ชื่อวิชา</th>
+                                <th class="p-4 border-b border-stone-200">ห้อง / ที่นั่ง</th>
                             </tr>
                         </thead>
                         <tbody id="examTableBody" class="text-stone-700 text-sm">
@@ -122,6 +180,33 @@
                 <div id="noResultsMsg" class="hidden text-center py-8 text-stone-500 bg-stone-50 rounded-b-xl border border-t-0 border-stone-200">
                     ไม่พบรายวิชาที่ค้นหา 🚫
                 </div>
+
+                <!-- พื้นที่แสดงผังที่นั่ง -->
+                <div id="seatMapContainer" class="hidden mt-8 border-t border-stone-200 pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-stone-800" id="seatMapTitle">ผังที่นั่งสอบ</h3>
+                        <button onclick="closeSeatMap()" class="text-stone-400 hover:text-stone-600">✖ ปิด</button>
+                    </div>
+                    <div class="bg-white border border-stone-200 rounded-xl p-4 md:p-6 shadow-sm overflow-x-auto">
+                        <div class="min-w-max"> <!-- เพื่อให้เลื่อนดูได้ถ้าจอเล็ก -->
+                            <div class="board-indicator w-full max-w-2xl mx-auto">กระดาน (Board) ↓</div>
+                            <div id="seatGridArea" class="flex flex-col items-center">
+                                <!-- ผังที่นั่งจะถูกสร้างที่นี่ด้วย JS -->
+                            </div>
+                            <div class="mt-6 flex items-center justify-center gap-6 text-sm text-stone-600">
+                                <div class="flex items-center gap-2">
+                                    <div class="seat my-seat">👤</div>
+                                    <span>ที่นั่งของคุณ</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="seat"></div>
+                                    <span>ที่นั่งอื่นๆ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -142,10 +227,58 @@
 
     <script>
         const examsData = [
-            { date: '19 มี.ค. 2569', time: '13:00 - 16:00', code: '010123117', name: 'ระบบปฏิบัติการ (Operating Systems)' },
-            { date: '23 มี.ค. 2569', time: '09:00 - 12:00', code: '010123213', name: 'ปัญญาประดิษฐ์ (Artificial Intelligence)' },
-            { date: '24 มี.ค. 2569', time: '09:00 - 12:00', code: '040203100', name: 'คณิตศาสตร์ทั่วไป (General Mathematics)' },
-            { date: '26 มี.ค. 2569', time: '09:00 - 12:00', code: '010123137', name: 'ความปลอดภัยสารสนเทศและเครือข่ายคอมพิวเตอร์ (Information and Network Security)' }
+            { 
+                date: '19 มี.ค. 2569', 
+                time: '13:00 - 16:00', 
+                code: '010123117', 
+                name: 'ระบบปฏิบัติการ (Operating Systems)',
+                section: 'S.1',
+                room: '88-801-2',
+                seat: 'I2',
+                seatRow: 'I',
+                seatCol: 2,
+                totalRows: 10, // A ถึง J
+                totalCols: 6
+            },
+            { 
+                date: '23 มี.ค. 2569', 
+                time: '09:00 - 12:00', 
+                code: '010123213', 
+                name: 'ปัญญาประดิษฐ์ (Artificial Intelligence)',
+                section: 'S.1',
+                room: '82-Ubuntu', // อัปเดตห้องสอบตามที่ผู้ใช้ร้องขอ
+                seat: 'J6', // อัปเดตที่นั่ง
+                seatRow: 'J', // อัปเดตแถว
+                seatCol: 6, // อัปเดตคอลัมน์
+                totalRows: 10, // A ถึง J
+                totalCols: 6 // อย่างน้อย 6 คอลัมน์
+            },
+            { 
+                date: '24 มี.ค. 2569', 
+                time: '09:00 - 12:00', 
+                code: '040203100', 
+                name: 'คณิตศาสตร์ทั่วไป (General Mathematics)',
+                section: 'S.2',
+                room: '89-603',
+                seat: 'F1',
+                seatRow: 'F',
+                seatCol: 1,
+                totalRows: 9, // A ถึง I
+                totalCols: 7 // อัปเดตจำนวนคอลัมน์ตามรูป
+            },
+            { 
+                date: '26 มี.ค. 2569', 
+                time: '09:00 - 12:00', 
+                code: '010123137', 
+                name: 'ความปลอดภัยสารสนเทศและเครือข่ายคอมพิวเตอร์ (Information and Network Security)',
+                section: 'S.1',
+                room: '88-801-2',
+                seat: 'D2',
+                seatRow: 'D',
+                seatCol: 2,
+                totalRows: 10, // A ถึง J
+                totalCols: 6
+            }
         ];
 
         const noExamsData = [
@@ -156,7 +289,8 @@
 
         const appState = {
             searchQuery: '',
-            filterDate: 'all'
+            filterDate: 'all',
+            activeSeatMap: null // เก็บ id ของวิชาที่กำลังดูผังที่นั่ง
         };
 
         const elements = {
@@ -167,7 +301,10 @@
             noExamContainer: document.getElementById('noExamContainer'),
             totalExamsMetric: document.getElementById('total-exams-metric'),
             totalDaysMetric: document.getElementById('total-days-metric'),
-            noExamsMetric: document.getElementById('no-exams-metric')
+            noExamsMetric: document.getElementById('no-exams-metric'),
+            seatMapContainer: document.getElementById('seatMapContainer'),
+            seatMapTitle: document.getElementById('seatMapTitle'),
+            seatGridArea: document.getElementById('seatGridArea')
         };
 
         function initApp() {
@@ -206,11 +343,26 @@
                 data.forEach((exam, index) => {
                     const row = document.createElement('tr');
                     row.className = `border-b border-stone-100 hover:bg-stone-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-[#fcfaf7]'}`;
+                    
+                    let seatInfoHtml = `<span class="text-stone-500">-</span>`;
+                    if (exam.room && exam.seat && exam.seat !== '-') {
+                        seatInfoHtml = `
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded text-xs whitespace-nowrap">ห้อง ${exam.room}</span>
+                                <span class="font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded text-xs whitespace-nowrap">ที่นั่ง ${exam.seat}</span>
+                                <button onclick="showSeatMap('${exam.code}')" class="text-xs px-3 py-1 bg-white border border-blue-400 text-blue-500 rounded hover:bg-blue-50 transition-colors whitespace-nowrap">ดูผังที่นั่ง</button>
+                            </div>
+                        `;
+                    } else if (exam.room) {
+                         seatInfoHtml = `<span class="font-medium text-stone-600 bg-stone-100 px-2 py-1 rounded text-xs whitespace-nowrap">ห้อง ${exam.room}</span>`;
+                    }
+
                     row.innerHTML = `
                         <td class="p-4 font-medium text-stone-800 whitespace-nowrap">📅 ${exam.date}</td>
                         <td class="p-4 text-stone-600 whitespace-nowrap">⏱️ ${exam.time}</td>
-                        <td class="p-4 font-mono text-[#d97757] font-semibold">${exam.code}</td>
+                        <td class="p-4 font-mono text-[#d97757] font-semibold">${exam.code} ${exam.section ? `<span class="text-stone-400 text-xs">${exam.section}</span>` : ''}</td>
                         <td class="p-4 font-medium text-stone-700">${exam.name}</td>
+                        <td class="p-4">${seatInfoHtml}</td>
                     `;
                     elements.tableBody.appendChild(row);
                 });
@@ -252,6 +404,7 @@
             }
 
             renderTable(filtered);
+            closeSeatMap(); // ปิดผังที่นั่งเมื่อมีการกรองข้อมูลใหม่
         }
 
         function setupEventListeners() {
@@ -343,6 +496,73 @@
             </div>`;
             
             container.innerHTML = html;
+        }
+
+        // ฟังก์ชันสำหรับแสดงผังที่นั่ง
+        function showSeatMap(examCode) {
+            const exam = examsData.find(e => e.code === examCode);
+            if (!exam || !exam.seatRow || !exam.seatCol) return;
+
+            appState.activeSeatMap = examCode;
+            
+            // อัปเดต Title
+            elements.seatMapTitle.innerHTML = `
+                <span class="text-[#d97757] font-mono mr-2">${exam.code}</span>${exam.name} <br>
+                <span class="text-sm text-stone-500 font-normal mt-1 block">
+                    📍 ห้อง: <span class="text-blue-600 font-medium">${exam.room}</span> | 
+                    🪑 ที่นั่ง: <span class="text-emerald-600 font-medium">${exam.seat}</span> 
+                    (แถว ${exam.seatRow}, คอลัมน์ ${exam.seatCol})
+                </span>
+            `;
+
+            // สร้าง Grid
+            let gridHtml = `<div class="flex">`;
+            
+            // สร้าง Header แถวบนสุด (หมายเลขคอลัมน์)
+            gridHtml += `<div class="flex flex-col"><div class="grid-label"></div>`; // มุมซ้ายบนว่าง
+            for(let r=0; r<exam.totalRows; r++) {
+                gridHtml += `<div class="grid-label font-bold">${String.fromCharCode(65 + r)}</div>`; // A, B, C...
+            }
+            gridHtml += `</div>`;
+
+            // สร้างพื้นที่ที่นั่ง
+            gridHtml += `<div class="flex flex-col">`;
+            
+            // สร้าง Header คอลัมน์
+            gridHtml += `<div class="flex gap-1 md:gap-1.5 justify-center mb-1 md:mb-1.5">`;
+            for(let c=1; c<=exam.totalCols; c++) {
+                 gridHtml += `<div class="grid-label font-bold">${c}</div>`;
+            }
+            gridHtml += `</div>`;
+
+            // สร้างแถวที่นั่ง
+            for(let r=0; r<exam.totalRows; r++) {
+                const currentRowChar = String.fromCharCode(65 + r);
+                gridHtml += `<div class="flex gap-1 md:gap-1.5 justify-center mb-1 md:mb-1.5">`;
+                for(let c=1; c<=exam.totalCols; c++) {
+                    const isMySeat = (currentRowChar === exam.seatRow && c === exam.seatCol);
+                    if (isMySeat) {
+                        gridHtml += `<div class="seat my-seat">👤</div>`;
+                    } else {
+                        gridHtml += `<div class="seat"></div>`;
+                    }
+                }
+                gridHtml += `</div>`;
+            }
+            gridHtml += `</div></div>`;
+
+            elements.seatGridArea.innerHTML = gridHtml;
+            elements.seatMapContainer.classList.remove('hidden');
+            
+            // เลื่อนหน้าจอลงมาให้เห็นผังที่นั่ง
+            setTimeout(() => {
+                elements.seatMapContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        function closeSeatMap() {
+            elements.seatMapContainer.classList.add('hidden');
+            appState.activeSeatMap = null;
         }
 
         document.addEventListener('DOMContentLoaded', initApp);
